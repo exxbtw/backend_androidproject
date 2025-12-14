@@ -1,20 +1,22 @@
-import socket
+import zmq
 
-HOST = "0.0.0.0"
-PORT = 5050
+FILE_NAME = "messages.txt"
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((HOST, PORT))
-s.listen(1)
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+socket.bind("tcp://0.0.0.0:5566")
 
-print("Ожидание от сервера")
+print("ZMQ server started")
 
-conn, addr = s.accept()
-print(f"Подключено {addr}")
+counter = 0
 
-data = conn.recv(1024).decode()
-print("Клиент отправил::", data)
+while True:
+    msg = socket.recv_string()
+    counter += 1
 
-conn.sendall(b"Hello")
+    print(f"[{counter}] Received: {msg}")
 
-conn.close()
+    with open(FILE_NAME, "a", encoding="utf-8") as f:
+        f.write(f"[{counter}] {msg}\n")
+
+    socket.send_string("Hello from Server!")
