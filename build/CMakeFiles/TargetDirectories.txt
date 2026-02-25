@@ -1,0 +1,5 @@
+/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles/imgui.dir
+/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles/implot.dir
+/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles/example_app.dir
+/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles/edit_cache.dir
+/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles/rebuild_cache.dir
