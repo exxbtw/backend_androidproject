@@ -10,7 +10,7 @@ find_path(ZMQ_INCLUDE_DIRS NAMES zmq.hpp PATHS /opt/homebrew/include /usr/local/
 find_library(ZMQ_LIBRARIES NAMES zmq PATHS /opt/homebrew/lib /usr/local/lib)
 
 if(NOT ZMQ_LIBRARIES)
-    message(FATAL_ERROR "ZeroMQ не найден! Выполни в терминале: brew install zeromq cppzmq")
+    message(FATAL_ERROR "ZeroMQ не найден")
 endif()
 
 set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
