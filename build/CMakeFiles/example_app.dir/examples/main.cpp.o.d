@@ -1005,4 +1005,6 @@ CMakeFiles/example_app.dir/examples/main.cpp.o: \
   /Users/user/AndroidStudioProjects/backend_androidproject/third_party/imgui/imconfig.h \
   /Users/user/AndroidStudioProjects/backend_androidproject/third_party/implot/implot.h \
   /Users/user/AndroidStudioProjects/backend_androidproject/third_party/imgui/backends/imgui_impl_opengl3.h \
-  /Users/user/AndroidStudioProjects/backend_androidproject/third_party/imgui/backends/imgui_impl_sdl2.h
+  /Users/user/AndroidStudioProjects/backend_androidproject/third_party/imgui/backends/imgui_impl_sdl2.h \
+  /usr/local/opt/libpq/include/libpq-fe.h \
+  /usr/local/opt/libpq/include/postgres_ext.h

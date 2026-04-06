@@ -17,9 +17,15 @@
 
 #include <vector>
 
+#include <libpq-fe.h>
+
+PGconn* db_conn;
+
+const char* conninfo = "host=localhost port=5432 dbname=mobile_data user=postgres password=2643";
+
 using json = nlohmann::json;
 
-const int MAX_HISTORY = 2000;
+const int MAX_HISTORY = 50000;
 
 std::vector<int> rsrp_history;
 std::vector<long long> timestamp_history;
@@ -64,7 +70,7 @@ struct LocationData {
     bool has_cell = false;
 
     std::mutex mtx;
-    volatile bool is_running;
+    std::atomic<bool> is_running;
 };
 
 void load_log_from_file() {
@@ -82,12 +88,16 @@ void load_log_from_file() {
             long long ts = j["time"].get<long long>();
 
             if (j.contains("cell_info") && !j["cell_info"].empty()) {
-                auto cell = j["cell_info"][0];
+                auto& cell = j["cell_info"][0];
+                bool is_primary = true;
+                if (cell.contains("is_primary"))
+                    is_primary = cell["is_primary"].get<bool>();
 
-                int rsrp = cell.value("rsrp", 0);
-
-                rsrp_history.push_back(rsrp);
-                timestamp_history.push_back(ts);
+                if (is_primary) {
+                    int rsrp = cell.value("rsrp", 0);
+                    rsrp_history.push_back(rsrp);
+                    timestamp_history.push_back(ts);
+                }
             }
 
         } catch (...) {
@@ -143,44 +153,117 @@ void run_server(LocationData* loc) {
 
             if (j.contains("cell_info") && !j["cell_info"].empty()) {
 
-                auto cell = j["cell_info"][0];
+                bool found_primary = false;
+                for (auto& cell : j["cell_info"]) {
+                    bool is_primary = true; 
+                    if (cell.contains("is_primary"))
+                        is_primary = cell["is_primary"].get<bool>();
 
-                loc->cell.type   = cell.value("type", "");
-                loc->cell.pci    = cell.value("pci", 0);
-                loc->cell.tac    = cell.value("tac", 0);
-                loc->cell.earfcn = cell.value("earfcn", 0);
+                    if (is_primary || !found_primary) { 
+                        loc->cell.type   = cell.value("type", "");
+                        loc->cell.pci    = cell.value("pci", 0);
+                        loc->cell.tac    = cell.value("tac", 0);
+                        loc->cell.earfcn = cell.value("earfcn", 0);
 
-                loc->cell.rsrp   = cell.value("rsrp", 0);
-                loc->cell.rsrq   = cell.value("rsrq", 0);
-                loc->cell.rssi   = cell.value("rssi", 0);
-                loc->cell.ta     = cell.value("ta", 0);
+                        loc->cell.rsrp   = cell.value("rsrp", 0);
+                        loc->cell.rsrq   = cell.value("rsrq", 0);
+                        loc->cell.rssi   = cell.value("rssi", 0);
+                        loc->cell.ta     = cell.value("ta", 0);
 
-                loc->cell.lac   = cell.value("lac", 0);
-                loc->cell.cid   = cell.value("cid", 0);
-                loc->cell.bsic  = cell.value("bsic", 0);
-                loc->cell.arfcn = cell.value("arfcn", 0);
-                loc->cell.psc   = cell.value("psc", 0);
+                        loc->cell.lac   = cell.value("lac", 0);
+                        loc->cell.cid   = cell.value("cid", 0);
+                        loc->cell.bsic  = cell.value("bsic", 0);
+                        loc->cell.arfcn = cell.value("arfcn", 0);
+                        loc->cell.psc   = cell.value("psc", 0);
 
-                loc->cell.nci      = cell.value("nci", 0LL);
-                loc->cell.nrarfcn  = cell.value("nrarfcn", 0);
+                        loc->cell.nci      = cell.value("nci", 0LL);
+                        loc->cell.nrarfcn  = cell.value("nrarfcn", 0);
 
-                loc->cell.band = cell.value("band", 0);
-                loc->cell.mcc  = cell.value("mcc", 0);
-                loc->cell.mnc  = cell.value("mnc", 0);
+                        loc->cell.band = cell.value("band", 0);
+                        loc->cell.mcc  = cell.value("mcc", 0);
+                        loc->cell.mnc  = cell.value("mnc", 0);
 
-                loc->cell.asu   = cell.value("asu", 0);
-                loc->cell.cqi   = cell.value("cqi", 0);
-                loc->cell.rssnr = cell.value("rssnr", 0);
+                        loc->cell.asu   = cell.value("asu", 0);
+                        loc->cell.cqi   = cell.value("cqi", 0);
+                        loc->cell.rssnr = cell.value("rssnr", 0);
 
-                loc->cell.ss_rsrp = cell.value("ss_rsrp", 0);
-                loc->cell.ss_rsrq = cell.value("ss_rsrq", 0);
-                loc->cell.ss_sinr = cell.value("ss_sinr", 0);
+                        loc->cell.ss_rsrp = cell.value("ss_rsrp", 0);
+                        loc->cell.ss_rsrq = cell.value("ss_rsrq", 0);
+                        loc->cell.ss_sinr = cell.value("ss_sinr", 0);
 
-                loc->has_cell = true;
-        }
+                        loc->has_cell = true;
+
+                        if (is_primary) {
+                            found_primary = true;
+                            break; 
+                        }
+                    }
+                }
+            }
 
             std::ofstream file("location_log.json", std::ios::app);
             file << j.dump() << std::endl;
+            if (loc->has_cell) {
+
+                std::string query =
+                "INSERT INTO cell_data ("
+                "lat, lon, alt, timestamp, type, "
+                "pci, tac, cid, lac, nci, "
+                "earfcn, nrarfcn, arfcn, band, "
+                "rsrp, rsrq, rssi, rssnr, sinr, "
+                "ss_rsrp, ss_rsrq, ss_sinr, "
+                "ta, cqi, asu, "
+                "mcc, mnc, "
+                "psc, bsic"
+                ") VALUES (" +
+
+                std::to_string(loc->lat) + "," +
+                std::to_string(loc->lon) + "," +
+                std::to_string(loc->alt) + "," +
+                std::to_string(loc->timestamp) + ",'" +
+
+                loc->cell.type + "'," +
+
+                std::to_string(loc->cell.pci) + "," +
+                std::to_string(loc->cell.tac) + "," +
+                std::to_string(loc->cell.cid) + "," +
+                std::to_string(loc->cell.lac) + "," +
+                std::to_string(loc->cell.nci) + "," +
+
+                std::to_string(loc->cell.earfcn) + "," +
+                std::to_string(loc->cell.nrarfcn) + "," +
+                std::to_string(loc->cell.arfcn) + "," +
+                std::to_string(loc->cell.band) + "," +
+
+                std::to_string(loc->cell.rsrp) + "," +
+                std::to_string(loc->cell.rsrq) + "," +
+                std::to_string(loc->cell.rssi) + "," +
+                std::to_string(loc->cell.rssnr) + "," +
+                std::to_string(loc->cell.rssnr) + "," + 
+
+                std::to_string(loc->cell.ss_rsrp) + "," +
+                std::to_string(loc->cell.ss_rsrq) + "," +
+                std::to_string(loc->cell.ss_sinr) + "," +
+
+                std::to_string(loc->cell.ta) + "," +
+                std::to_string(loc->cell.cqi) + "," +
+                std::to_string(loc->cell.asu) + "," +
+
+                std::to_string(loc->cell.mcc) + "," +
+                std::to_string(loc->cell.mnc) + "," +
+
+                std::to_string(loc->cell.psc) + "," +
+                std::to_string(loc->cell.bsic) +
+                ");";
+
+                PGresult* res = PQexec(db_conn, query.c_str());
+
+                if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+                    std::cerr << "Insert error: " << PQerrorMessage(db_conn) << std::endl;
+                }
+
+                PQclear(res);
+            }
 
             socket.send(zmq::str_buffer("OK"), zmq::send_flags::none);
 
@@ -191,6 +274,14 @@ void run_server(LocationData* loc) {
 }
 
 int main(int argc, char *argv[]) {
+
+    db_conn = PQconnectdb(conninfo); 
+
+    if (PQstatus(db_conn) != CONNECTION_OK) { 
+        std::cerr << "DB error: " << PQerrorMessage(db_conn) << std::endl;
+    } else {
+        std::cout << "DB OK\n";
+    }
 
     static LocationData locationInfo;
     locationInfo.is_running = true;
