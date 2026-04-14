@@ -16,6 +16,7 @@
 #include "backends/imgui_impl_sdl2.h"
 
 #include <vector>
+#include <map>
 
 #include <libpq-fe.h>
 
@@ -27,10 +28,18 @@ using json = nlohmann::json;
 
 const int MAX_HISTORY = 50000;
 
-std::vector<int> rsrp_history;
-std::vector<long long> timestamp_history;
+struct PciHistory {
+    std::vector<double> timestamps;
+    std::vector<double> rsrp;
+    std::vector<double> rssi;
+    std::vector<double> sinr;
+};
 
-long long last_timestamp = 0;
+long long base_time = 0;
+bool base_time_set = false;
+
+std::mutex history_mtx;
+std::map<int, PciHistory> pci_histories;
 
 struct CellInfoData {
     std::string type;
@@ -58,6 +67,8 @@ struct CellInfoData {
     int ss_rsrq = 0;
     int ss_sinr = 0;
     int nrarfcn = 0;
+
+    bool is_primary = false;
 };
 
 struct LocationData {
@@ -66,12 +77,42 @@ struct LocationData {
     float alt = 0.0f;
     long long timestamp = 0;
 
-    CellInfoData cell;
+    std::vector<CellInfoData> cells;
     bool has_cell = false;
 
     std::mutex mtx;
     std::atomic<bool> is_running;
 };
+
+CellInfoData parse_cell(const json& cell) {
+    CellInfoData c;
+    c.type = cell.value("type", "");
+    c.pci = cell.value("pci", 0);
+    c.tac = cell.value("tac", 0);
+    c.earfcn = cell.value("earfcn", 0);
+    c.rsrp = cell.value("rsrp", 0);
+    c.rsrq = cell.value("rsrq", 0);
+    c.rssi = cell.value("rssi", 0);
+    c.ta = cell.value("ta", 0);
+    c.lac = cell.value("lac", 0);
+    c.cid = cell.value("cid", 0);
+    c.bsic = cell.value("bsic", 0);
+    c.arfcn = cell.value("arfcn", 0);
+    c.psc = cell.value("psc", 0);
+    c.nci = cell.value("nci", 0LL);
+    c.nrarfcn = cell.value("nrarfcn", 0);
+    c.band = cell.value("band", 0);
+    c.mcc = cell.value("mcc", 0);
+    c.mnc = cell.value("mnc", 0);
+    c.asu = cell.value("asu", 0);
+    c.cqi = cell.value("cqi", 0);
+    c.rssnr = cell.value("rssnr", 0);
+    c.ss_rsrp = cell.value("ss_rsrp", 0);
+    c.ss_rsrq = cell.value("ss_rsrq", 0);
+    c.ss_sinr = cell.value("ss_sinr", 0);
+    c.is_primary = cell.value("is_primary", false);
+    return c;
+}
 
 void load_log_from_file() {
     std::ifstream file("location_log.json");
@@ -87,32 +128,140 @@ void load_log_from_file() {
 
             long long ts = j["time"].get<long long>();
 
-            if (j.contains("cell_info") && !j["cell_info"].empty()) {
-                auto& cell = j["cell_info"][0];
-                bool is_primary = true;
-                if (cell.contains("is_primary"))
-                    is_primary = cell["is_primary"].get<bool>();
+            if (!base_time_set) {
+                base_time = ts;
+                base_time_set = true;
+            }
+            double t_sec = (ts - base_time) / 1000.0;
 
-                if (is_primary) {
-                    int rsrp = cell.value("rsrp", 0);
-                    rsrp_history.push_back(rsrp);
-                    timestamp_history.push_back(ts);
-                }
+            if (!j.contains("cell_info")) continue;
+
+            for (auto& cell : j["cell_info"]) {
+                int pci = cell.value("pci", -1);
+                if (pci < 0) continue;
+
+                int rsrp = cell.value("rsrp", 0);
+                int rssi = cell.value("rssi", 0);
+                int sinr = cell.value("ss_sinr", 0);
+                if (sinr == 0) sinr = cell.value("rssnr", 0);
+
+                if (rsrp < -500 || rsrp > 500) rsrp = 0;
+                if (rssi < -200 || rssi > 0) rssi = 0;
+                if (sinr < -50  || sinr > 50) sinr = 0;
+
+                auto& h = pci_histories[pci];
+                h.timestamps.push_back(t_sec);
+                h.rsrp.push_back(rsrp);
+                h.rssi.push_back(rssi);
+                h.sinr.push_back(sinr);
             }
 
         } catch (...) {
         }
     }
 
-    if (rsrp_history.size() > MAX_HISTORY) {
-        rsrp_history.erase(rsrp_history.begin(),
-                           rsrp_history.end() - MAX_HISTORY);
-        timestamp_history.erase(timestamp_history.begin(),
-                                timestamp_history.end() - MAX_HISTORY);
+    for (auto& [pci, h] : pci_histories) {
+        if ((int)h.timestamps.size() > MAX_HISTORY) {
+            int excess = (int)h.timestamps.size() - MAX_HISTORY;
+            h.timestamps.erase(h.timestamps.begin(), h.timestamps.begin() + excess);
+            h.rsrp.erase(h.rsrp.begin(), h.rsrp.begin() + excess);
+            h.rssi.erase(h.rssi.begin(), h.rssi.begin() + excess);
+            h.sinr.erase(h.sinr.begin(), h.sinr.begin() + excess);
+        }
+    }
+}
+
+void update_history(const std::vector<CellInfoData>& cells, long long ts) {
+    if (!base_time_set) {
+        base_time = ts;
+        base_time_set = true;
+    }
+    double t_sec = (ts - base_time) / 1000.0;
+
+    std::lock_guard<std::mutex> lock(history_mtx);
+
+    for (auto& c : cells) {
+        if (c.pci <= 0) continue;
+
+        int rsrp = (c.rsrp < -200 || c.rsrp > 0) ? 0 : c.rsrp;
+        int rssi = (c.rssi < -200 || c.rssi > 0) ? 0 : c.rssi;
+        int sinr = (c.ss_sinr != 0) ? c.ss_sinr : c.rssnr;
+        if (sinr < -50 || sinr > 50) sinr = 0;
+
+        auto& h = pci_histories[c.pci];
+        h.timestamps.push_back(t_sec);
+        h.rsrp.push_back(rsrp);
+        h.rssi.push_back(rssi);
+        h.sinr.push_back(sinr);
+
+        if ((int)h.timestamps.size() > MAX_HISTORY) {
+            h.timestamps.erase(h.timestamps.begin());
+            h.rsrp.erase(h.rsrp.begin());
+            h.rssi.erase(h.rssi.begin());
+            h.sinr.erase(h.sinr.begin());
+        }
+    }
+}
+
+void db_insert(LocationData* loc, const CellInfoData& c) {
+    std::string query =
+        "INSERT INTO cell_data ("
+        "lat, lon, alt, timestamp, type, "
+        "pci, tac, cid, lac, nci, "
+        "earfcn, nrarfcn, arfcn, band, "
+        "rsrp, rsrq, rssi, rssnr, sinr, "
+        "ss_rsrp, ss_rsrq, ss_sinr, "
+        "ta, cqi, asu, "
+        "mcc, mnc, "
+        "psc, bsic"
+        ") VALUES (" +
+
+        std::to_string(loc->lat) + "," +
+        std::to_string(loc->lon) + "," +
+        std::to_string(loc->alt) + "," +
+        std::to_string(loc->timestamp) + ",'" +
+
+        c.type + "'," +
+
+        std::to_string(c.pci) + "," +
+        std::to_string(c.tac) + "," +
+        std::to_string(c.cid) + "," +
+        std::to_string(c.lac) + "," +
+        std::to_string(c.nci) + "," +
+
+        std::to_string(c.earfcn) + "," +
+        std::to_string(c.nrarfcn) + "," +
+        std::to_string(c.arfcn) + "," +
+        std::to_string(c.band) + "," +
+
+        std::to_string(c.rsrp) + "," +
+        std::to_string(c.rsrq) + "," +
+        std::to_string(c.rssi) + "," +
+        std::to_string(c.rssnr) + "," +
+        std::to_string((c.ss_sinr != 0) ? c.ss_sinr : c.rssnr) + "," +
+
+        std::to_string(c.ss_rsrp) + "," +
+        std::to_string(c.ss_rsrq) + "," +
+        std::to_string(c.ss_sinr) + "," +
+
+        std::to_string(c.ta) + "," +
+        std::to_string(c.cqi) + "," +
+        std::to_string(c.asu) + "," +
+
+        std::to_string(c.mcc) + "," +
+        std::to_string(c.mnc) + "," +
+
+        std::to_string(c.psc) + "," +
+        std::to_string(c.bsic) +
+        ");";
+
+    PGresult* res = PQexec(db_conn, query.c_str());
+
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+        std::cerr << "Insert error: " << PQerrorMessage(db_conn) << std::endl;
     }
 
-    if (!timestamp_history.empty())
-        last_timestamp = timestamp_history.back();
+    PQclear(res);
 }
 
 void run_server(LocationData* loc) {
@@ -142,127 +291,35 @@ void run_server(LocationData* loc) {
 
             auto j = json::parse(msg_str);
 
-            std::lock_guard<std::mutex> lock(loc->mtx);
-
-            loc->lat = j["latitude"].get<double>();
-            loc->lon = j["longitude"].get<double>();
-            loc->alt = j["altitude"].get<double>();
-            loc->timestamp = j["time"].get<long long>();
-
-            loc->has_cell = false;
-
+            std::vector<CellInfoData> cells;
             if (j.contains("cell_info") && !j["cell_info"].empty()) {
-
-                bool found_primary = false;
                 for (auto& cell : j["cell_info"]) {
-                    bool is_primary = true; 
-                    if (cell.contains("is_primary"))
-                        is_primary = cell["is_primary"].get<bool>();
-
-                    if (is_primary || !found_primary) { 
-                        loc->cell.type   = cell.value("type", "");
-                        loc->cell.pci    = cell.value("pci", 0);
-                        loc->cell.tac    = cell.value("tac", 0);
-                        loc->cell.earfcn = cell.value("earfcn", 0);
-
-                        loc->cell.rsrp   = cell.value("rsrp", 0);
-                        loc->cell.rsrq   = cell.value("rsrq", 0);
-                        loc->cell.rssi   = cell.value("rssi", 0);
-                        loc->cell.ta     = cell.value("ta", 0);
-
-                        loc->cell.lac   = cell.value("lac", 0);
-                        loc->cell.cid   = cell.value("cid", 0);
-                        loc->cell.bsic  = cell.value("bsic", 0);
-                        loc->cell.arfcn = cell.value("arfcn", 0);
-                        loc->cell.psc   = cell.value("psc", 0);
-
-                        loc->cell.nci      = cell.value("nci", 0LL);
-                        loc->cell.nrarfcn  = cell.value("nrarfcn", 0);
-
-                        loc->cell.band = cell.value("band", 0);
-                        loc->cell.mcc  = cell.value("mcc", 0);
-                        loc->cell.mnc  = cell.value("mnc", 0);
-
-                        loc->cell.asu   = cell.value("asu", 0);
-                        loc->cell.cqi   = cell.value("cqi", 0);
-                        loc->cell.rssnr = cell.value("rssnr", 0);
-
-                        loc->cell.ss_rsrp = cell.value("ss_rsrp", 0);
-                        loc->cell.ss_rsrq = cell.value("ss_rsrq", 0);
-                        loc->cell.ss_sinr = cell.value("ss_sinr", 0);
-
-                        loc->has_cell = true;
-
-                        if (is_primary) {
-                            found_primary = true;
-                            break; 
-                        }
-                    }
+                    cells.push_back(parse_cell(cell));
                 }
             }
 
+            long long ts = j["time"].get<long long>();
+            float lat = j["latitude"].get<double>();
+            float lon = j["longitude"].get<double>();
+            float alt = j["altitude"].get<double>();
+
+            {
+                std::lock_guard<std::mutex> lock(loc->mtx);
+                loc->lat = lat;
+                loc->lon = lon;
+                loc->alt = alt;
+                loc->timestamp = ts;
+                loc->cells = cells;
+                loc->has_cell = !cells.empty();
+            }
+
+            update_history(cells, ts);
+
             std::ofstream file("location_log.json", std::ios::app);
             file << j.dump() << std::endl;
-            if (loc->has_cell) {
 
-                std::string query =
-                "INSERT INTO cell_data ("
-                "lat, lon, alt, timestamp, type, "
-                "pci, tac, cid, lac, nci, "
-                "earfcn, nrarfcn, arfcn, band, "
-                "rsrp, rsrq, rssi, rssnr, sinr, "
-                "ss_rsrp, ss_rsrq, ss_sinr, "
-                "ta, cqi, asu, "
-                "mcc, mnc, "
-                "psc, bsic"
-                ") VALUES (" +
-
-                std::to_string(loc->lat) + "," +
-                std::to_string(loc->lon) + "," +
-                std::to_string(loc->alt) + "," +
-                std::to_string(loc->timestamp) + ",'" +
-
-                loc->cell.type + "'," +
-
-                std::to_string(loc->cell.pci) + "," +
-                std::to_string(loc->cell.tac) + "," +
-                std::to_string(loc->cell.cid) + "," +
-                std::to_string(loc->cell.lac) + "," +
-                std::to_string(loc->cell.nci) + "," +
-
-                std::to_string(loc->cell.earfcn) + "," +
-                std::to_string(loc->cell.nrarfcn) + "," +
-                std::to_string(loc->cell.arfcn) + "," +
-                std::to_string(loc->cell.band) + "," +
-
-                std::to_string(loc->cell.rsrp) + "," +
-                std::to_string(loc->cell.rsrq) + "," +
-                std::to_string(loc->cell.rssi) + "," +
-                std::to_string(loc->cell.rssnr) + "," +
-                std::to_string(loc->cell.rssnr) + "," + 
-
-                std::to_string(loc->cell.ss_rsrp) + "," +
-                std::to_string(loc->cell.ss_rsrq) + "," +
-                std::to_string(loc->cell.ss_sinr) + "," +
-
-                std::to_string(loc->cell.ta) + "," +
-                std::to_string(loc->cell.cqi) + "," +
-                std::to_string(loc->cell.asu) + "," +
-
-                std::to_string(loc->cell.mcc) + "," +
-                std::to_string(loc->cell.mnc) + "," +
-
-                std::to_string(loc->cell.psc) + "," +
-                std::to_string(loc->cell.bsic) +
-                ");";
-
-                PGresult* res = PQexec(db_conn, query.c_str());
-
-                if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-                    std::cerr << "Insert error: " << PQerrorMessage(db_conn) << std::endl;
-                }
-
-                PQclear(res);
+            for (auto& c : cells) {
+                db_insert(loc, c);
             }
 
             socket.send(zmq::str_buffer("OK"), zmq::send_flags::none);
@@ -273,11 +330,35 @@ void run_server(LocationData* loc) {
     }
 }
 
+void plot_metric(const char* plot_id, const char* y_label, const std::map<int, PciHistory>& histories, int metric) {
+    if (ImPlot::BeginPlot(plot_id, ImVec2(-1, 250))) {
+
+        ImPlot::SetupAxes("Time (sec)", y_label);
+        ImPlot::SetupLegend(ImPlotLocation_NorthEast);
+
+        for (auto& [pci, h] : histories) {
+            if (h.timestamps.empty()) continue;
+
+            const std::vector<double>* vals = nullptr;
+            if      (metric == 0) vals = &h.rsrp;
+            else if (metric == 1) vals = &h.rssi;
+            else                  vals = &h.sinr;
+
+            char label[32];
+            snprintf(label, sizeof(label), "PCI %d", pci);
+
+            ImPlot::PlotLine(label, h.timestamps.data(), vals->data(), (int)h.timestamps.size());
+        }
+
+        ImPlot::EndPlot();
+    }
+}
+
 int main(int argc, char *argv[]) {
 
-    db_conn = PQconnectdb(conninfo); 
+    db_conn = PQconnectdb(conninfo);
 
-    if (PQstatus(db_conn) != CONNECTION_OK) { 
+    if (PQstatus(db_conn) != CONNECTION_OK) {
         std::cerr << "DB error: " << PQerrorMessage(db_conn) << std::endl;
     } else {
         std::cout << "DB OK\n";
@@ -302,8 +383,8 @@ int main(int argc, char *argv[]) {
         "Backend",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        1024,
-        768,
+        1280,
+        900,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
 
@@ -340,7 +421,7 @@ int main(int argc, char *argv[]) {
 
         float currentLat, currentLon, currentAlt;
         long long currentTime;
-        CellInfoData currentCell;
+        std::vector<CellInfoData> currentCells;
         bool hasCell;
 
         {
@@ -350,21 +431,14 @@ int main(int argc, char *argv[]) {
             currentLon = locationInfo.lon;
             currentAlt = locationInfo.alt;
             currentTime = locationInfo.timestamp;
-            currentCell = locationInfo.cell;
+            currentCells = locationInfo.cells;
             hasCell = locationInfo.has_cell;
         }
 
-        if (hasCell && currentTime != last_timestamp) {
-
-            last_timestamp = currentTime;
-
-            rsrp_history.push_back(currentCell.rsrp);
-            timestamp_history.push_back(currentTime);
-
-            if (rsrp_history.size() > MAX_HISTORY) {
-                rsrp_history.erase(rsrp_history.begin());
-                timestamp_history.erase(timestamp_history.begin());
-            }
+        std::map<int, PciHistory> histories_copy;
+        {
+            std::lock_guard<std::mutex> lock(history_mtx);
+            histories_copy = pci_histories;
         }
 
         ImGui::Begin("Smartphone Data");
@@ -376,35 +450,37 @@ int main(int argc, char *argv[]) {
         ImGui::Separator();
 
         if (hasCell) {
-            ImGui::Text("Cell Type: %s", currentCell.type.c_str());
-            ImGui::Text("RSRP: %d dBm", currentCell.rsrp);
-            ImGui::Text("RSRQ: %d", currentCell.rsrq);
-            ImGui::Text("RSSI: %d", currentCell.rssi);
+            for (auto& c : currentCells) {
+                if (!c.is_primary) continue;
+                ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f),
+                    "[Primary] Type: %s  PCI: %d", c.type.c_str(), c.pci);
+                ImGui::Text("  RSRP: %d dBm", c.rsrp);
+                ImGui::Text("  RSRQ: %d", c.rsrq);
+                ImGui::Text("  RSSI: %d", c.rssi);
+                ImGui::Text("  SINR: %d", (c.ss_sinr != 0) ? c.ss_sinr : c.rssnr);
+            }
+
+            ImGui::Separator();
+
+            for (auto& c : currentCells) {
+                ImGui::Text("  [%s] PCI=%-4d RSRP=%-5d RSSI=%-5d SINR=%-5d %s",
+                    c.type.c_str(),
+                    c.pci,
+                    c.rsrp,
+                    c.rssi,
+                    (c.ss_sinr != 0) ? c.ss_sinr : c.rssnr,
+                    c.is_primary ? "<- primary" : "");
+            }
         }
 
         ImGui::Separator();
 
-        if (!rsrp_history.empty()) {
-
-            if (ImPlot::BeginPlot("Signal Strength (RSRP)", ImVec2(-1,300))) {
-
-                ImPlot::SetupAxes("Time (sec)", "RSRP (dBm)");
-
-                std::vector<double> x(rsrp_history.size());
-                std::vector<double> y(rsrp_history.size());
-
-                long long base = timestamp_history.front();
-
-                for (size_t i = 0; i < rsrp_history.size(); i++) {
-
-                    x[i] = (timestamp_history[i] - base) / 1000.0;
-                    y[i] = rsrp_history[i];
-                }
-
-                ImPlot::PlotLine("RSRP", x.data(), y.data(), x.size());
-
-                ImPlot::EndPlot();
-            }
+        if (!histories_copy.empty()) {
+            plot_metric("RSRP##plot", "RSRP (dBm)", histories_copy, 0);
+            ImGui::Spacing();
+            plot_metric("RSSI##plot", "RSSI (dBm)", histories_copy, 1);
+            ImGui::Spacing();
+            plot_metric("SINR##plot", "SINR (dB)",  histories_copy, 2);
         }
 
         ImGui::End();
@@ -438,6 +514,8 @@ int main(int argc, char *argv[]) {
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    PQfinish(db_conn);
 
     return 0;
 }
