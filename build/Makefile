@@ -155,6 +155,54 @@ example_app/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/build
 .PHONY : example_app/fast
 
+examples/database.o: examples/database.cpp.o
+.PHONY : examples/database.o
+
+# target to build an object file
+examples/database.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/database.cpp.o
+.PHONY : examples/database.cpp.o
+
+examples/database.i: examples/database.cpp.i
+.PHONY : examples/database.i
+
+# target to preprocess a source file
+examples/database.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/database.cpp.i
+.PHONY : examples/database.cpp.i
+
+examples/database.s: examples/database.cpp.s
+.PHONY : examples/database.s
+
+# target to generate assembly for a file
+examples/database.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/database.cpp.s
+.PHONY : examples/database.cpp.s
+
+examples/gui_app.o: examples/gui_app.cpp.o
+.PHONY : examples/gui_app.o
+
+# target to build an object file
+examples/gui_app.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/gui_app.cpp.o
+.PHONY : examples/gui_app.cpp.o
+
+examples/gui_app.i: examples/gui_app.cpp.i
+.PHONY : examples/gui_app.i
+
+# target to preprocess a source file
+examples/gui_app.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/gui_app.cpp.i
+.PHONY : examples/gui_app.cpp.i
+
+examples/gui_app.s: examples/gui_app.cpp.s
+.PHONY : examples/gui_app.s
+
+# target to generate assembly for a file
+examples/gui_app.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/gui_app.cpp.s
+.PHONY : examples/gui_app.cpp.s
+
 examples/main.o: examples/main.cpp.o
 .PHONY : examples/main.o
 
@@ -178,6 +226,54 @@ examples/main.s: examples/main.cpp.s
 examples/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/main.cpp.s
 .PHONY : examples/main.cpp.s
+
+examples/map_engine.o: examples/map_engine.cpp.o
+.PHONY : examples/map_engine.o
+
+# target to build an object file
+examples/map_engine.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/map_engine.cpp.o
+.PHONY : examples/map_engine.cpp.o
+
+examples/map_engine.i: examples/map_engine.cpp.i
+.PHONY : examples/map_engine.i
+
+# target to preprocess a source file
+examples/map_engine.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/map_engine.cpp.i
+.PHONY : examples/map_engine.cpp.i
+
+examples/map_engine.s: examples/map_engine.cpp.s
+.PHONY : examples/map_engine.s
+
+# target to generate assembly for a file
+examples/map_engine.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/map_engine.cpp.s
+.PHONY : examples/map_engine.cpp.s
+
+examples/telemetry.o: examples/telemetry.cpp.o
+.PHONY : examples/telemetry.o
+
+# target to build an object file
+examples/telemetry.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/telemetry.cpp.o
+.PHONY : examples/telemetry.cpp.o
+
+examples/telemetry.i: examples/telemetry.cpp.i
+.PHONY : examples/telemetry.i
+
+# target to preprocess a source file
+examples/telemetry.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/telemetry.cpp.i
+.PHONY : examples/telemetry.cpp.i
+
+examples/telemetry.s: examples/telemetry.cpp.s
+.PHONY : examples/telemetry.s
+
+# target to generate assembly for a file
+examples/telemetry.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/telemetry.cpp.s
+.PHONY : examples/telemetry.cpp.s
 
 third_party/imgui/backends/imgui_impl_opengl3.o: third_party/imgui/backends/imgui_impl_opengl3.cpp.o
 .PHONY : third_party/imgui/backends/imgui_impl_opengl3.o
@@ -430,9 +526,21 @@ help:
 	@echo "... example_app"
 	@echo "... imgui"
 	@echo "... implot"
+	@echo "... examples/database.o"
+	@echo "... examples/database.i"
+	@echo "... examples/database.s"
+	@echo "... examples/gui_app.o"
+	@echo "... examples/gui_app.i"
+	@echo "... examples/gui_app.s"
 	@echo "... examples/main.o"
 	@echo "... examples/main.i"
 	@echo "... examples/main.s"
+	@echo "... examples/map_engine.o"
+	@echo "... examples/map_engine.i"
+	@echo "... examples/map_engine.s"
+	@echo "... examples/telemetry.o"
+	@echo "... examples/telemetry.i"
+	@echo "... examples/telemetry.s"
 	@echo "... third_party/imgui/backends/imgui_impl_opengl3.o"
 	@echo "... third_party/imgui/backends/imgui_impl_opengl3.i"
 	@echo "... third_party/imgui/backends/imgui_impl_opengl3.s"

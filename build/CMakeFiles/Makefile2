@@ -91,7 +91,7 @@ clean: CMakeFiles/example_app.dir/clean
 CMakeFiles/imgui.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/imgui.dir/build.make CMakeFiles/imgui.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/imgui.dir/build.make CMakeFiles/imgui.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10 "Built target imgui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=7,8,9,10,11,12,13,14 "Built target imgui"
 .PHONY : CMakeFiles/imgui.dir/all
 
 # Build rule for subdir invocation for target.
@@ -108,7 +108,7 @@ imgui: CMakeFiles/imgui.dir/rule
 # codegen rule for target.
 CMakeFiles/imgui.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/imgui.dir/build.make CMakeFiles/imgui.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10 "Finished codegen for target imgui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=7,8,9,10,11,12,13,14 "Finished codegen for target imgui"
 .PHONY : CMakeFiles/imgui.dir/codegen
 
 # clean rule for target.
@@ -123,7 +123,7 @@ CMakeFiles/imgui.dir/clean:
 CMakeFiles/implot.dir/all: CMakeFiles/imgui.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/implot.dir/build.make CMakeFiles/implot.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/implot.dir/build.make CMakeFiles/implot.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=11,12,13,14 "Built target implot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=15,16,17,18 "Built target implot"
 .PHONY : CMakeFiles/implot.dir/all
 
 # Build rule for subdir invocation for target.
@@ -140,7 +140,7 @@ implot: CMakeFiles/implot.dir/rule
 # codegen rule for target.
 CMakeFiles/implot.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/implot.dir/build.make CMakeFiles/implot.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=11,12,13,14 "Finished codegen for target implot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=15,16,17,18 "Finished codegen for target implot"
 .PHONY : CMakeFiles/implot.dir/codegen
 
 # clean rule for target.
@@ -156,12 +156,12 @@ CMakeFiles/example_app.dir/all: CMakeFiles/imgui.dir/all
 CMakeFiles/example_app.dir/all: CMakeFiles/implot.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=1,2 "Built target example_app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target example_app"
 .PHONY : CMakeFiles/example_app.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/example_app.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/example_app.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles 0
 .PHONY : CMakeFiles/example_app.dir/rule
@@ -173,7 +173,7 @@ example_app: CMakeFiles/example_app.dir/rule
 # codegen rule for target.
 CMakeFiles/example_app.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=1,2 "Finished codegen for target example_app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Finished codegen for target example_app"
 .PHONY : CMakeFiles/example_app.dir/codegen
 
 # clean rule for target.

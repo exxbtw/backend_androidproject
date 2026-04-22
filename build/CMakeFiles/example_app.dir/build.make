@@ -86,14 +86,78 @@ CMakeFiles/example_app.dir/examples/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/example_app.dir/examples/main.cpp.s"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/user/AndroidStudioProjects/backend_androidproject/examples/main.cpp -o CMakeFiles/example_app.dir/examples/main.cpp.s
 
+CMakeFiles/example_app.dir/examples/database.cpp.o: CMakeFiles/example_app.dir/flags.make
+CMakeFiles/example_app.dir/examples/database.cpp.o: /Users/user/AndroidStudioProjects/backend_androidproject/examples/database.cpp
+CMakeFiles/example_app.dir/examples/database.cpp.o: CMakeFiles/example_app.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/example_app.dir/examples/database.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/example_app.dir/examples/database.cpp.o -MF CMakeFiles/example_app.dir/examples/database.cpp.o.d -o CMakeFiles/example_app.dir/examples/database.cpp.o -c /Users/user/AndroidStudioProjects/backend_androidproject/examples/database.cpp
+
+CMakeFiles/example_app.dir/examples/database.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/example_app.dir/examples/database.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/user/AndroidStudioProjects/backend_androidproject/examples/database.cpp > CMakeFiles/example_app.dir/examples/database.cpp.i
+
+CMakeFiles/example_app.dir/examples/database.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/example_app.dir/examples/database.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/user/AndroidStudioProjects/backend_androidproject/examples/database.cpp -o CMakeFiles/example_app.dir/examples/database.cpp.s
+
+CMakeFiles/example_app.dir/examples/map_engine.cpp.o: CMakeFiles/example_app.dir/flags.make
+CMakeFiles/example_app.dir/examples/map_engine.cpp.o: /Users/user/AndroidStudioProjects/backend_androidproject/examples/map_engine.cpp
+CMakeFiles/example_app.dir/examples/map_engine.cpp.o: CMakeFiles/example_app.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/example_app.dir/examples/map_engine.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/example_app.dir/examples/map_engine.cpp.o -MF CMakeFiles/example_app.dir/examples/map_engine.cpp.o.d -o CMakeFiles/example_app.dir/examples/map_engine.cpp.o -c /Users/user/AndroidStudioProjects/backend_androidproject/examples/map_engine.cpp
+
+CMakeFiles/example_app.dir/examples/map_engine.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/example_app.dir/examples/map_engine.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/user/AndroidStudioProjects/backend_androidproject/examples/map_engine.cpp > CMakeFiles/example_app.dir/examples/map_engine.cpp.i
+
+CMakeFiles/example_app.dir/examples/map_engine.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/example_app.dir/examples/map_engine.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/user/AndroidStudioProjects/backend_androidproject/examples/map_engine.cpp -o CMakeFiles/example_app.dir/examples/map_engine.cpp.s
+
+CMakeFiles/example_app.dir/examples/telemetry.cpp.o: CMakeFiles/example_app.dir/flags.make
+CMakeFiles/example_app.dir/examples/telemetry.cpp.o: /Users/user/AndroidStudioProjects/backend_androidproject/examples/telemetry.cpp
+CMakeFiles/example_app.dir/examples/telemetry.cpp.o: CMakeFiles/example_app.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/example_app.dir/examples/telemetry.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/example_app.dir/examples/telemetry.cpp.o -MF CMakeFiles/example_app.dir/examples/telemetry.cpp.o.d -o CMakeFiles/example_app.dir/examples/telemetry.cpp.o -c /Users/user/AndroidStudioProjects/backend_androidproject/examples/telemetry.cpp
+
+CMakeFiles/example_app.dir/examples/telemetry.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/example_app.dir/examples/telemetry.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/user/AndroidStudioProjects/backend_androidproject/examples/telemetry.cpp > CMakeFiles/example_app.dir/examples/telemetry.cpp.i
+
+CMakeFiles/example_app.dir/examples/telemetry.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/example_app.dir/examples/telemetry.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/user/AndroidStudioProjects/backend_androidproject/examples/telemetry.cpp -o CMakeFiles/example_app.dir/examples/telemetry.cpp.s
+
+CMakeFiles/example_app.dir/examples/gui_app.cpp.o: CMakeFiles/example_app.dir/flags.make
+CMakeFiles/example_app.dir/examples/gui_app.cpp.o: /Users/user/AndroidStudioProjects/backend_androidproject/examples/gui_app.cpp
+CMakeFiles/example_app.dir/examples/gui_app.cpp.o: CMakeFiles/example_app.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/example_app.dir/examples/gui_app.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/example_app.dir/examples/gui_app.cpp.o -MF CMakeFiles/example_app.dir/examples/gui_app.cpp.o.d -o CMakeFiles/example_app.dir/examples/gui_app.cpp.o -c /Users/user/AndroidStudioProjects/backend_androidproject/examples/gui_app.cpp
+
+CMakeFiles/example_app.dir/examples/gui_app.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/example_app.dir/examples/gui_app.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/user/AndroidStudioProjects/backend_androidproject/examples/gui_app.cpp > CMakeFiles/example_app.dir/examples/gui_app.cpp.i
+
+CMakeFiles/example_app.dir/examples/gui_app.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/example_app.dir/examples/gui_app.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/user/AndroidStudioProjects/backend_androidproject/examples/gui_app.cpp -o CMakeFiles/example_app.dir/examples/gui_app.cpp.s
+
 # Object files for target example_app
 example_app_OBJECTS = \
-"CMakeFiles/example_app.dir/examples/main.cpp.o"
+"CMakeFiles/example_app.dir/examples/main.cpp.o" \
+"CMakeFiles/example_app.dir/examples/database.cpp.o" \
+"CMakeFiles/example_app.dir/examples/map_engine.cpp.o" \
+"CMakeFiles/example_app.dir/examples/telemetry.cpp.o" \
+"CMakeFiles/example_app.dir/examples/gui_app.cpp.o"
 
 # External object files for target example_app
 example_app_EXTERNAL_OBJECTS =
 
 example_app: CMakeFiles/example_app.dir/examples/main.cpp.o
+example_app: CMakeFiles/example_app.dir/examples/database.cpp.o
+example_app: CMakeFiles/example_app.dir/examples/map_engine.cpp.o
+example_app: CMakeFiles/example_app.dir/examples/telemetry.cpp.o
+example_app: CMakeFiles/example_app.dir/examples/gui_app.cpp.o
 example_app: CMakeFiles/example_app.dir/build.make
 example_app: libimgui.a
 example_app: libimplot.a
@@ -104,7 +168,7 @@ example_app: /usr/local/Cellar/sdl2/2.32.10/lib/libSDL2.dylib
 example_app: /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/System/Library/Frameworks/OpenGL.framework
 example_app: /usr/local/lib/libGLEW.2.3.1.dylib
 example_app: CMakeFiles/example_app.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable example_app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/user/AndroidStudioProjects/backend_androidproject/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable example_app"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/example_app.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
