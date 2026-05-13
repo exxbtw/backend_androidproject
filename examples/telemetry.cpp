@@ -1,5 +1,6 @@
 #include "telemetry.h"
 #include "database.h"
+#include "heatmap.h"
 #include <zmq.hpp>
 #include <fstream>
 #include <iostream>
@@ -24,7 +25,7 @@ CellInfoData parse_cell(const json& cell) {
     c.cid = cell.value("cid", 0);
     c.bsic = cell.value("bsic", 0);
     c.arfcn = cell.value("arfcn", 0);
-    c.psc = cell.value("psc", 0);
+    c.psc  = cell.value("psc", 0);
     c.nci = cell.value("nci", 0LL);
     c.nrarfcn = cell.value("nrarfcn", 0);
     c.band = cell.value("band", 0);
@@ -41,10 +42,7 @@ CellInfoData parse_cell(const json& cell) {
 }
 
 void update_history(const std::vector<CellInfoData>& cells, long long ts) {
-    if (!base_time_set) {
-        base_time = ts;
-        base_time_set = true;
-    }
+    if (!base_time_set) { base_time = ts; base_time_set = true; }
     double t_sec = (ts - base_time) / 1000.0;
 
     std::lock_guard<std::mutex> lock(history_mtx);
@@ -82,11 +80,12 @@ void load_log_from_file() {
             if (!j.contains("time") || !j.contains("cell_info")) continue;
 
             long long ts = j["time"].get<long long>();
-            if (!base_time_set) {
-                base_time = ts;
-                base_time_set = true;
-            }
+            if (!base_time_set) { base_time = ts; base_time_set = true; }
             double t_sec = (ts - base_time) / 1000.0;
+
+            float lat = j.value("latitude", 0.0);
+            float lon = j.value("longitude", 0.0);
+            float alt = j.value("altitude", 0.0);
 
             for (auto& cell_j : j["cell_info"]) {
                 int pci = cell_j.value("pci", -1);
@@ -99,6 +98,20 @@ void load_log_from_file() {
                 int sinr = cell_j.value("ss_sinr", 0);
                 if (sinr == 0) sinr = cell_j.value("rssnr", 0);
                 h.sinr.push_back(sinr);
+
+                HeatPoint hp;
+                hp.lat = lat;
+                hp.lon = lon;
+                hp.alt = alt;
+                hp.rsrp = cell_j.value("rsrp", 0);
+                hp.rsrq = cell_j.value("rsrq", 0);
+                hp.rssi = cell_j.value("rssi", 0);
+                hp.earfcn = cell_j.value("earfcn", 0);
+                hp.pci = cell_j.value("pci", 0);
+                if (hp.rsrp != 0 || hp.rssi != 0) {
+                    std::lock_guard<std::mutex> lk(g_heat_points_mtx);
+                    g_heat_points.push_back(hp);
+                }
             }
         } catch (...) { continue; }
     }
@@ -107,7 +120,7 @@ void load_log_from_file() {
 void run_server(LocationData* loc) {
     zmq::context_t context(1);
     zmq::socket_t socket(context, zmq::socket_type::rep);
-    
+
     try {
         socket.bind("tcp://*:5566");
     } catch (const std::exception& e) {
@@ -127,9 +140,8 @@ void run_server(LocationData* loc) {
             auto j = json::parse(msg_str);
             std::vector<CellInfoData> cells;
             if (j.contains("cell_info")) {
-                for (auto& cell_j : j["cell_info"]) {
+                for (auto& cell_j : j["cell_info"])
                     cells.push_back(parse_cell(cell_j));
-                }
             }
 
             long long ts = j["time"].get<long long>();
@@ -145,12 +157,18 @@ void run_server(LocationData* loc) {
 
             update_history(cells, ts);
 
-            std::ofstream log_file("location_log.json", std::ios::app);
-            log_file << j.dump() << std::endl;
-
-            for (auto& c : cells) {
-                db_insert(loc, c);
+            { //доб точки в хитмап
+                LocationData tmp_loc;
+                std::lock_guard<std::mutex> lock(loc->mtx);
+                tmp_loc = *loc;
+                heat_add_points(tmp_loc);
             }
+
+            std::ofstream log_file("location_log.json", std::ios::app);
+            log_file << j.dump() << "\n";
+
+            for (auto& c : cells)
+                db_insert(loc, c);
 
             socket.send(zmq::str_buffer("OK"), zmq::send_flags::none);
         } catch (...) {

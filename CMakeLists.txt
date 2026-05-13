@@ -4,21 +4,17 @@ project(backend_androidproject LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- Поиск зависимостей ---
 find_package(Threads REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-# Поиск ZeroMQ
 find_path(ZMQ_INCLUDE_DIRS NAMES zmq.hpp PATHS /opt/homebrew/include /usr/local/include /usr/include)
 find_library(ZMQ_LIBRARIES NAMES zmq PATHS /opt/homebrew/lib /usr/local/lib /usr/lib)
 
-# Пути для libpq (PostgreSQL)
 set(LIBPQ_INCLUDE_DIR "/usr/local/opt/libpq/include")
 set(LIBPQ_LIB "/usr/local/opt/libpq/lib/libpq.dylib")
 
-# --- Сборка сторонних библиотек (ImGui, ImPlot) ---
 set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
 
 add_library(imgui STATIC
@@ -41,8 +37,6 @@ add_library(implot STATIC
 target_include_directories(implot PUBLIC ${THIRD_PARTY_DIR}/implot)
 target_link_libraries(implot PUBLIC imgui)
 
-# --- Сборка основного приложения ---
-# Укажи здесь путь к папке, где теперь лежат твои файлы (например, если в examples)
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/examples)
 
 add_executable(example_app 
@@ -51,6 +45,7 @@ add_executable(example_app
     ${SRC_DIR}/map_engine.cpp
     ${SRC_DIR}/telemetry.cpp
     ${SRC_DIR}/gui_app.cpp
+    ${SRC_DIR}/heatmap.cpp
 )
 
 target_include_directories(example_app PRIVATE 
@@ -66,5 +61,5 @@ target_link_libraries(example_app
     ${ZMQ_LIBRARIES}     
     Threads::Threads
     ${LIBPQ_LIB}
-    ${CMAKE_DL_LIBS} # Для динамических библиотек, если нужно
+    ${CMAKE_DL_LIBS} 
 )
