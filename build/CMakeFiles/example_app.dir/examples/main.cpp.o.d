@@ -1010,6 +1010,7 @@ CMakeFiles/example_app.dir/examples/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/__type_traits/is_execution_policy.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/any \
   /Users/user/AndroidStudioProjects/backend_androidproject/examples/gui_app.h \
+  /Users/user/AndroidStudioProjects/backend_androidproject/examples/heatmap.h \
   /Users/user/AndroidStudioProjects/backend_androidproject/third_party/imgui/imgui.h \
   /Users/user/AndroidStudioProjects/backend_androidproject/third_party/imgui/imconfig.h \
   /Users/user/AndroidStudioProjects/backend_androidproject/third_party/implot/implot.h \

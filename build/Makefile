@@ -203,6 +203,30 @@ examples/gui_app.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/gui_app.cpp.s
 .PHONY : examples/gui_app.cpp.s
 
+examples/heatmap.o: examples/heatmap.cpp.o
+.PHONY : examples/heatmap.o
+
+# target to build an object file
+examples/heatmap.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/heatmap.cpp.o
+.PHONY : examples/heatmap.cpp.o
+
+examples/heatmap.i: examples/heatmap.cpp.i
+.PHONY : examples/heatmap.i
+
+# target to preprocess a source file
+examples/heatmap.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/heatmap.cpp.i
+.PHONY : examples/heatmap.cpp.i
+
+examples/heatmap.s: examples/heatmap.cpp.s
+.PHONY : examples/heatmap.s
+
+# target to generate assembly for a file
+examples/heatmap.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/example_app.dir/build.make CMakeFiles/example_app.dir/examples/heatmap.cpp.s
+.PHONY : examples/heatmap.cpp.s
+
 examples/main.o: examples/main.cpp.o
 .PHONY : examples/main.o
 
@@ -532,6 +556,9 @@ help:
 	@echo "... examples/gui_app.o"
 	@echo "... examples/gui_app.i"
 	@echo "... examples/gui_app.s"
+	@echo "... examples/heatmap.o"
+	@echo "... examples/heatmap.i"
+	@echo "... examples/heatmap.s"
 	@echo "... examples/main.o"
 	@echo "... examples/main.i"
 	@echo "... examples/main.s"

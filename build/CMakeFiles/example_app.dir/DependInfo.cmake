@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/Users/user/AndroidStudioProjects/backend_androidproject/examples/database.cpp" "CMakeFiles/example_app.dir/examples/database.cpp.o" "gcc" "CMakeFiles/example_app.dir/examples/database.cpp.o.d"
   "/Users/user/AndroidStudioProjects/backend_androidproject/examples/gui_app.cpp" "CMakeFiles/example_app.dir/examples/gui_app.cpp.o" "gcc" "CMakeFiles/example_app.dir/examples/gui_app.cpp.o.d"
+  "/Users/user/AndroidStudioProjects/backend_androidproject/examples/heatmap.cpp" "CMakeFiles/example_app.dir/examples/heatmap.cpp.o" "gcc" "CMakeFiles/example_app.dir/examples/heatmap.cpp.o.d"
   "/Users/user/AndroidStudioProjects/backend_androidproject/examples/main.cpp" "CMakeFiles/example_app.dir/examples/main.cpp.o" "gcc" "CMakeFiles/example_app.dir/examples/main.cpp.o.d"
   "/Users/user/AndroidStudioProjects/backend_androidproject/examples/map_engine.cpp" "CMakeFiles/example_app.dir/examples/map_engine.cpp.o" "gcc" "CMakeFiles/example_app.dir/examples/map_engine.cpp.o.d"
   "/Users/user/AndroidStudioProjects/backend_androidproject/examples/telemetry.cpp" "CMakeFiles/example_app.dir/examples/telemetry.cpp.o" "gcc" "CMakeFiles/example_app.dir/examples/telemetry.cpp.o.d"

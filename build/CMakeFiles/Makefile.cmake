@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "/Users/user/AndroidStudioProjects/backend_androidproject/CMakeLists.txt"
-  "CMakeFiles/4.3.0/CMakeCXXCompiler.cmake"
-  "CMakeFiles/4.3.0/CMakeSystem.cmake"
+  "CMakeFiles/4.3.2/CMakeCXXCompiler.cmake"
+  "CMakeFiles/4.3.2/CMakeSystem.cmake"
   "/usr/local/lib/cmake/SDL2/sdl2-config-version.cmake"
   "/usr/local/lib/cmake/SDL2/sdl2-config.cmake"
   "/usr/local/lib/cmake/glew/CopyImportedTargetProperties.cmake"

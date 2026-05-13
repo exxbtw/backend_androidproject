@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/example_app.dir/examples/database.cpp.o.d"
   "CMakeFiles/example_app.dir/examples/gui_app.cpp.o"
   "CMakeFiles/example_app.dir/examples/gui_app.cpp.o.d"
+  "CMakeFiles/example_app.dir/examples/heatmap.cpp.o"
+  "CMakeFiles/example_app.dir/examples/heatmap.cpp.o.d"
   "CMakeFiles/example_app.dir/examples/main.cpp.o"
   "CMakeFiles/example_app.dir/examples/main.cpp.o.d"
   "CMakeFiles/example_app.dir/examples/map_engine.cpp.o"

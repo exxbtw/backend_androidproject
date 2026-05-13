@@ -850,6 +850,7 @@ CMakeFiles/example_app.dir/examples/gui_app.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/__stop_token/atomic_unique_lock.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/__stop_token/intrusive_list_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/__stop_token/stop_token.h \
+  /Users/user/AndroidStudioProjects/backend_androidproject/examples/heatmap.h \
   /Users/user/AndroidStudioProjects/backend_androidproject/third_party/imgui/imgui.h \
   /Users/user/AndroidStudioProjects/backend_androidproject/third_party/imgui/imconfig.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/float.h \

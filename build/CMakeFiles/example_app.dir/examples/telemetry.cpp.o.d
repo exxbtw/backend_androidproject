@@ -838,8 +838,14 @@ CMakeFiles/example_app.dir/examples/telemetry.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/chrono \
   /Users/user/AndroidStudioProjects/backend_androidproject/examples/database.h \
   /usr/local/opt/libpq/include/libpq-fe.h \
-  /usr/local/opt/libpq/include/postgres_ext.h /usr/local/include/zmq.hpp \
-  /usr/local/include/zmq.h \
+  /usr/local/opt/libpq/include/postgres_ext.h \
+  /Users/user/AndroidStudioProjects/backend_androidproject/examples/heatmap.h \
+  /usr/local/include/GL/glew.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/System/Library/Frameworks/OpenGL.framework/Headers/glu.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/System/Library/Frameworks/OpenGL.framework/Headers/OpenGLAvailability.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/os/availability.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/System/Library/Frameworks/OpenGL.framework/Headers/gl.h \
+  /usr/local/include/zmq.hpp /usr/local/include/zmq.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/sstream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.1.sdk/usr/include/c++/v1/fstream \
