@@ -94,12 +94,12 @@ static void generate_tile(int zoom, int tx, int ty) {
     {
         std::lock_guard<std::mutex> lk(g_heat_points_mtx);
         for (auto& p : g_heat_points) {
-            if (p.lat < se_lat - margin || p.lat > nw_lat + margin) continue;
-            if (p.lon < nw_lon - margin || p.lon > se_lon + margin) continue;
+            if (p.lat < se_lat - margin || p.lat > nw_lat + margin) continue; //проверка по широте (n-s)
+            if (p.lon < nw_lon - margin || p.lon > se_lon + margin) continue; //долготе (w-e)
             if (g_heat_earfcn_filter != 0 && p.earfcn != g_heat_earfcn_filter) continue;
-            if (g_heat_pci_filter != 0 && p.pci != g_heat_pci_filter)   continue;
-            float v = get_point_value(p);
-            if (std::isnan(v)) continue;
+            if (g_heat_pci_filter != 0 && p.pci != g_heat_pci_filter) continue;
+            float v = get_point_value(p); 
+            if (std::isnan(v)) continue; //точка с nan
             pts.push_back({ p.lat, p.lon, v });
         }
     }
@@ -111,7 +111,7 @@ static void generate_tile(int zoom, int tx, int ty) {
 
     if (!pts.empty()) {
         auto [v_min, v_max] = metric_range();
-        double lat_step = (nw_lat - se_lat) / H;
+        double lat_step = (nw_lat - se_lat) / H; //шаг сетки
         double lon_step = (se_lon - nw_lon) / W;
         const double DEG2M = 111320.0;
 
@@ -131,9 +131,9 @@ static void generate_tile(int zoom, int tx, int ty) {
                     num += w * p.val;
                     den += w;
                 }
-                if (den < 1e-12) continue;
+                if (den < 1e-12) continue; 
 
-                float t = ((float)(num / den) - v_min) / (v_max - v_min);
+                float t = ((float)(num / den) - v_min) / (v_max - v_min); //нормализация 
                 unsigned char r, g, b;
                 color_gradient(t, r, g, b);
                 int i = (py * W + px) * 4;

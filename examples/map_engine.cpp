@@ -14,7 +14,7 @@ std::mutex tile_queue_mtx;
 std::condition_variable tile_queue_cv;
 std::queue<TileID> tile_load_queue;
 std::atomic<bool> tile_loader_running{true};
-
+    
 TileID lat_lon_to_tile(double lat, double lon, int zoom) {
     double lat_rad = lat * M_PI / 180.0;
     double n = std::pow(2.0, zoom);

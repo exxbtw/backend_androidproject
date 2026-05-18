@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Window* window = SDL_CreateWindow("Backend Telemetry",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        1280, 900,
+        1920, 1080,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    std::thread server_thread(run_server,        &locationInfo);
+    std::thread server_thread(run_server, &locationInfo);
     std::thread tile_thread(tile_loader_thread);
     std::thread heat_thread(heat_worker_thread); 
 
